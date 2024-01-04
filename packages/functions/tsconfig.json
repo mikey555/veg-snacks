@@ -6,6 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@veg-snacks/core/*": ["../core/src/*"]
-    }
+    },
+    "noEmitOnError": true,
   }
 }

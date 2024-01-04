@@ -1,8 +1,12 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
-  "exclude": ["packages"],
   "compilerOptions": {
     "module": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@veg-snacks/core/*": ["../core/src/*"]
+    },
+    "noEmitOnError": true,
   }
 }
