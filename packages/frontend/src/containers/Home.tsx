@@ -20,14 +20,14 @@ export default function Home() {
     function renderNotesList(notes: NoteType[]) {
         return (
             <>
-                <LinkContainer to="/notes/new">
+                <LinkContainer to="/products/new">
                     <ListGroup.Item action className="py-3 text-nowrap text-truncate">
                         <BsPencilSquare size={17} />
                         <span className="ms-2 fw-bold">Create a new note</span>
                     </ListGroup.Item>
                 </LinkContainer>
                 {notes.map(({ noteId, content, createdAt }) => (
-                    <LinkContainer key={noteId} to={`/notes/${noteId}`}>
+                    <LinkContainer key={noteId} to={`/products/${noteId}`}>
                         <ListGroup.Item action className="text-nowrap text-truncate">
                             <span className="fw-bold">{content.trim().split("\n")[0]}</span>
                             <br />
@@ -61,7 +61,7 @@ export default function Home() {
     }, [isAuthenticated]);
 
     function loadNotes() {
-        return API.get("veg-snacks", "/notes", {});
+        return API.get("veg-snacks", "/products", {});
     }
 
     function renderLander() {

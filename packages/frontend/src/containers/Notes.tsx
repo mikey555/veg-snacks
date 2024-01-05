@@ -21,7 +21,7 @@ export default function Notes() {
 
     useEffect(() => {
         function loadNote() {
-            return API.get("veg-snacks", `/notes/${id}`, {});
+            return API.get("veg-snacks", `/products/${id}`, {});
         }
 
         async function onLoad() {
@@ -57,7 +57,7 @@ export default function Notes() {
     }
 
     function saveNote(note: NoteType) {
-        return API.put("veg-snacks", `/notes/${id}`, {
+        return API.put("veg-snacks", `/products/${id}`, {
             body: note,
         });
     }
@@ -96,7 +96,7 @@ export default function Notes() {
     }
 
     function deleteNote() {
-        return API.del("veg-snacks", `/notes/${id}`, {});
+        return API.del("veg-snacks", `/products/${id}`, {});
     }
 
     async function handleDelete(event: React.FormEvent<HTMLModElement>) {

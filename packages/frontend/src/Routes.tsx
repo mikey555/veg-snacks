@@ -39,7 +39,7 @@ export default function Links() {
         }
       />
       <Route
-        path="/notes/new"
+        path="/products/new"
         element={
           <AuthenticatedRoute>
             <NewNote />
@@ -48,7 +48,7 @@ export default function Links() {
       />
 
       <Route
-        path="/notes/:id"
+        path="/products/:id"
         element={
           <AuthenticatedRoute>
             <Notes />
