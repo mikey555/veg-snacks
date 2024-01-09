@@ -3,13 +3,13 @@ import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../lib/contextLib";
 import "./Home.css";
 import { API } from "aws-amplify";
-import { NoteType } from "../types/note";
+import { ProductType } from "../types/note";
 import { onError } from "../lib/errorLib";
 import { LinkContainer } from "react-router-bootstrap";
 import { BsPencilSquare } from "react-icons/bs";
 
 export default function Home() {
-    const [notes, setNotes] = useState<Array<NoteType>>([]);
+    const [notes, setNotes] = useState<Array<ProductType>>([]);
     const { isAuthenticated } = useAppContext();
     const [isLoading, setIsLoading] = useState(true);
 
@@ -17,7 +17,7 @@ export default function Home() {
         return !str ? "" : new Date(str).toLocaleString();
     }
 
-    function renderNotesList(notes: NoteType[]) {
+    function renderNotesList(notes: ProductType[]) {
         return (
             <>
                 <LinkContainer to="/products/new">
@@ -26,7 +26,7 @@ export default function Home() {
                         <span className="ms-2 fw-bold">Create a new note</span>
                     </ListGroup.Item>
                 </LinkContainer>
-                {notes.map(({ noteId, content, createdAt }) => (
+                {notes.map(({ productId: noteId, name: content, createdAt }) => (
                     <LinkContainer key={noteId} to={`/products/${noteId}`}>
                         <ListGroup.Item action className="text-nowrap text-truncate">
                             <span className="fw-bold">{content.trim().split("\n")[0]}</span>

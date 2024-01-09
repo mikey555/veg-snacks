@@ -4,7 +4,7 @@ import { API, Storage } from "aws-amplify";
 import { onError } from "../lib/errorLib";
 import config from "../config";
 import Form from "react-bootstrap/Form";
-import { NoteType } from "../types/note";
+import { ProductType } from "../types/note";
 import Stack from "react-bootstrap/Stack";
 import LoaderButton from "../components/LoaderButton";
 import "./Notes.css";
@@ -14,27 +14,32 @@ export default function Notes() {
     const file = useRef<null | File>(null)
     const { id } = useParams();
     const nav = useNavigate();
-    const [note, setNote] = useState<null | NoteType>(null);
-    const [content, setContent] = useState("");
+    const [product, setProduct] = useState<null | ProductType>(null);
+    const [name, setName] = useState("");
+    const [brand, setBrand] = useState("");
+    const [category, setCategory] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        function loadNote() {
+        function loadProduct() {
             return API.get("veg-snacks", `/products/${id}`, {});
         }
 
         async function onLoad() {
             try {
-                const note = await loadNote();
-                const { content, attachment } = note;
+                const product = await loadProduct();
+                const { name, brand, category, attachment } = product;
 
                 if (attachment) {
-                    note.attachmentURL = await Storage.vault.get(attachment);
+                    product.attachmentURL = await Storage.vault.get(attachment);
                 }
 
-                setContent(content);
-                setNote(note);
+                setName(name);
+                setBrand(brand);
+                setCategory(category);
+                setProduct(product);
             } catch (e) {
                 onError(e);
             }
@@ -44,7 +49,7 @@ export default function Notes() {
     }, [id]);
 
     function validateForm() {
-        return content.length > 0;
+        return name.length > 0;
     }
 
     function formatFilename(str: string) {
@@ -56,9 +61,9 @@ export default function Notes() {
         file.current = event.currentTarget.files[0];
     }
 
-    function saveNote(note: NoteType) {
+    function saveProduct(product: ProductType) {
         return API.put("veg-snacks", `/products/${id}`, {
-            body: note,
+            body: product,
         });
     }
 
@@ -80,12 +85,14 @@ export default function Notes() {
         try {
             if (file.current) {
                 attachment = await s3Upload(file.current);
-            } else if (note && note.attachment) {
-                attachment = note.attachment;
+            } else if (product && product.attachment) {
+                attachment = product.attachment;
             }
 
-            await saveNote({
-                content: content,
+            await saveProduct({
+                name: name,
+                brand: brand,
+                category: category,
                 attachment: attachment,
             });
             nav("/");
@@ -121,55 +128,67 @@ export default function Notes() {
         }
     }
 
+    function renderViewProduct(product: ProductType) {
+        return (<Stack gap={3}>
+            <div>{product.name}</div>
+            <div>{product.brand}</div>
+            <div>{product.category}</div>
+        </Stack>);
+    }
+
+    function renderEditProduct(product: ProductType) {
+        return <Form onSubmit={handleSubmit}>
+            <Stack gap={3}>
+                <Form.Group controlId="content">
+                    <Form.Control
+                        size="lg"
+                        as="textarea"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group className="mt-2" controlId="file">
+                    <Form.Label>Attachment</Form.Label>
+                    {product.attachment && (
+                        <p>
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={product.attachmentURL}
+                            >
+                                {formatFilename(product.attachment)}
+                            </a>
+                        </p>
+                    )}
+                    <Form.Control onChange={handleFileChange} type="file" />
+                </Form.Group>
+                <Stack gap={1}>
+                    <LoaderButton
+                        size="lg"
+                        type="submit"
+                        isLoading={isLoading}
+                        disabled={!validateForm()}
+                    >
+                        Save
+                    </LoaderButton>
+                    <LoaderButton
+                        size="lg"
+                        variant="danger"
+                        onClick={handleDelete}
+                        isLoading={isDeleting}
+                    >
+                        Delete
+                    </LoaderButton>
+                </Stack>
+            </Stack>
+        </Form>
+    }
+
     return (
         <div className="Notes">
-            {note && (
-                <Form onSubmit={handleSubmit}>
-                    <Stack gap={3}>
-                        <Form.Group controlId="content">
-                            <Form.Control
-                                size="lg"
-                                as="textarea"
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mt-2" controlId="file">
-                            <Form.Label>Attachment</Form.Label>
-                            {note.attachment && (
-                                <p>
-                                    <a
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={note.attachmentURL}
-                                    >
-                                        {formatFilename(note.attachment)}
-                                    </a>
-                                </p>
-                            )}
-                            <Form.Control onChange={handleFileChange} type="file" />
-                        </Form.Group>
-                        <Stack gap={1}>
-                            <LoaderButton
-                                size="lg"
-                                type="submit"
-                                isLoading={isLoading}
-                                disabled={!validateForm()}
-                            >
-                                Save
-                            </LoaderButton>
-                            <LoaderButton
-                                size="lg"
-                                variant="danger"
-                                onClick={handleDelete}
-                                isLoading={isDeleting}
-                            >
-                                Delete
-                            </LoaderButton>
-                        </Stack>
-                    </Stack>
-                </Form>
-            )}
+            {(product && isAdmin) ?
+                renderEditProduct(product) :
+                product && renderViewProduct(product)}
         </div>
     );
 }

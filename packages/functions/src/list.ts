@@ -3,20 +3,29 @@ import handler from "@veg-snacks/core/handler";
 import dynamoDb from "@veg-snacks/core/dynamodb";
 
 export const main = handler(async (event) => {
-    const params = {
-        TableName: Table.Products.tableName,
-        // 'KeyConditionExpression' defines the condition for the query
-        // - 'userId = :userId': only return items with matching 'userId'
-        //   partition key
-        KeyConditionExpression: "userId = :userId",
-        // 'ExpressionAttributeValues' defines the value in the condition
-        // - ':userId': defines 'userId' to be the id of the author
+    let params = {
+        TableName: Table.Products4.tableName,
+        /* KeyConditionExpression: "brand = :brand",
         ExpressionAttributeValues: {
-            ":userId": event.requestContext.authorizer?.iam.cognitoIdentity.identityId,
-        },
+            ":brand": event?.pathParameters?.brand,
+        }, */
+        Limit: 10
     };
 
-    const result = await dynamoDb.query(params);
+    /* let data = [];
+    let lastEvaluatedKey = null;
+
+    do {
+        params.ExclusiveStartKey = lastEvaluatedKey;
+
+        const results = await dynamoDb.scan(params);
+        data = data.concat(results.Items);
+        lastEvaluatedKey = results.LastEvaluatedKey;
+    } while (lastEvaluatedKey); */
+
+    // const result = await dynamoDb.query(params);
+    const result = await dynamoDb.scan(params);
+
 
     // Return the matching list of items in response body
     return JSON.stringify(result.Items);

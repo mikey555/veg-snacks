@@ -1,6 +1,8 @@
-export interface NoteType {
-    noteId?: string;
-    content: string;
+export interface ProductType {
+    productId?: string;
+    name: string;
+    brand: string;
+    category: string;
     createdAt?: string;
     attachment?: string;
     attachmentURL?: string;

@@ -12,15 +12,32 @@ export function StorageStack({ stack }: StackContext) {
         ],
     });
     // Create the DynamoDB table
-    const table = new Table(stack, "Products", {
+    const products = new Table(stack, "Products4", {
         fields: {
-            userId: "string",
-            noteId: "string",
+            productId: "string",
+            createdByUserId: "string",
+            createdAt: "number",
+            name: "string",
+            brand: "string",
+            category: "string",
+            imageUrl: "string",
         },
-        primaryIndex: { partitionKey: "userId", sortKey: "noteId" },
+        primaryIndex: { partitionKey: "productId" },
+        globalIndexes: {
+            userCreatedIndex: {
+                partitionKey: 'createdByUserId',
+                projection: ['name', 'brand', 'category', 'imageUrl'],
+
+            },
+            /* brandIndex: {
+                partitionKey: 'brand',
+                projection: ['name', 'category', 'imageUrl'],
+            } */
+        }
     });
 
+
     return {
-        bucket, table,
+        bucket, products,
     };
 }

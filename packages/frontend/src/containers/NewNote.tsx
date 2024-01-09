@@ -6,17 +6,19 @@ import config from "../config";
 import "./NewNote.css";
 import { API } from "aws-amplify";
 import { onError } from "../lib/errorLib";
-import { NoteType } from "../types/note";
+import { ProductType } from "../types/note";
 import { s3Upload } from "../lib/awsLib";
 
 export default function NewNote() {
     const file = useRef<null | File>(null);
     const nav = useNavigate();
-    const [content, setContent] = useState("");
+    const [name, setName] = useState("");
+    const [brand, setBrand] = useState("");
+    const [category, setCategory] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     function validateForm() {
-        return content.length > 0;
+        return name.length > 0 && brand.length > 0;
     }
 
     function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -24,9 +26,9 @@ export default function NewNote() {
         file.current = event.currentTarget.files[0];
     }
 
-    function createNote(note: NoteType) {
+    function createProduct(product: ProductType) {
         return API.post("veg-snacks", "/products", {
-            body: note,
+            body: product,
         });
     }
 
@@ -48,7 +50,9 @@ export default function NewNote() {
                 ? await s3Upload(file.current)
                 : undefined;
 
-            await createNote({ content, attachment });
+            await createProduct({
+                name, brand, category, attachment
+            });
             nav("/");
         } catch (e) {
             onError(e);
@@ -59,11 +63,25 @@ export default function NewNote() {
     return (
         <div className="NewNote">
             <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="content">
+                <Form.Group controlId="name">
+                    <Form.Label>Product Name</Form.Label>
                     <Form.Control
-                        value={content}
-                        as="textarea"
-                        onChange={(e) => setContent(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group controlId="brand">
+                    <Form.Label>Brand</Form.Label>
+                    <Form.Control
+                        value={brand}
+                        onChange={(e) => setBrand(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group controlId="category">
+                    <Form.Label>Category</Form.Label>
+                    <Form.Control
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
                     />
                 </Form.Group>
                 <Form.Group className="mt-2" controlId="file">

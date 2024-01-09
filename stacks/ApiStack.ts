@@ -2,7 +2,7 @@ import { Api, Config, StackContext, use } from "sst/constructs";
 import { StorageStack } from "./StorageStack";
 
 export function ApiStack({ stack }: StackContext) {
-    const { table } = use(StorageStack);
+    const { products } = use(StorageStack);
     const STRIPE_SECRET_KEY = new Config.Secret(stack, "STRIPE_SECRET_KEY");
 
     // Create the API
@@ -11,7 +11,7 @@ export function ApiStack({ stack }: StackContext) {
         defaults: {
             authorizer: "iam",
             function: {
-                bind: [table, STRIPE_SECRET_KEY],
+                bind: [products, STRIPE_SECRET_KEY],
             },
         },
         routes: {

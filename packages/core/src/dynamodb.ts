@@ -11,4 +11,5 @@ export default {
         client.update(params).promise(),
     delete: (params: DocumentClient.DeleteItemInput) =>
         client.delete(params).promise(),
+    scan: (params: DocumentClient.ScanInput) => client.scan(params).promise(),
 };

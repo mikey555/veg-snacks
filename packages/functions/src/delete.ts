@@ -4,10 +4,9 @@ import dynamoDb from "@veg-snacks/core/dynamodb";
 
 export const main = handler(async (event) => {
     const params = {
-        TableName: Table.Products.tableName,
+        TableName: Table.Products4.tableName,
         Key: {
-            userId: event.requestContext.authorizer?.iam.cognitoIdentity.identityId,
-            noteId: event?.pathParameters?.id, // The id of the note from the path
+            productId: event?.pathParameters?.id, // The id of the note from the path
         },
     };
 

@@ -5,8 +5,9 @@ import dynamoDb from '@veg-snacks/core/dynamodb';
 
 export const main = handler(async (event) => {
     let data = {
-        content: "",
-        attachment: "",
+        name: "",
+        brand: "",
+        category: "",
     };
 
     if (event.body != null) {
@@ -14,14 +15,17 @@ export const main = handler(async (event) => {
     }
 
     const params = {
-        TableName: Table.Products.tableName,
+        TableName: Table.Products4.tableName,
         Item: {
-            // The attributes of the item to be created
             userId: event.requestContext.authorizer?.iam.cognitoIdentity.identityId,
-            noteId: uuid.v1(), // A unique uuid
-            content: data.content, // Parsed from request body
-            attachment: data.attachment, // Parsed from request body
+            productId: uuid.v1(), // A unique uuid
+            name: data.name,
+            brand: data.brand,
+            category: data.category,
+            imageUrl: 'https://testUrl.com',
             createdAt: Date.now(), // Current Unix timestamp
+
+
         },
     };
 

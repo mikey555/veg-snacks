@@ -3,21 +3,32 @@ import handler from "@veg-snacks/core/handler";
 import dynamoDb from "@veg-snacks/core/dynamodb";
 
 export const main = handler(async (event) => {
-    const data = JSON.parse(event.body || "{}");
+    let data = {
+        name: "",
+        brand: "",
+        category: "",
+        attachment: "",
+    };
+
+    data = JSON.parse(event.body || "{}");
 
     const params = {
-        TableName: Table.Products.tableName,
+        TableName: Table.Products4.tableName,
         Key: {
             // The attributes of the item to be created
+            productId: event?.pathParameters?.id, // The id of the note from the path
             userId: event.requestContext.authorizer?.iam.cognitoIdentity.identityId,
-            noteId: event?.pathParameters?.id, // The id of the note from the path
+
         },
         // 'UpdateExpression' defines the attributes to be updated
         // 'ExpressionAttributeValues' defines the value in the update expression
-        UpdateExpression: "SET content = :content, attachment = :attachment",
+        UpdateExpression: "SET name = :name, attachment = :attachment, \
+                            brand = :brand, category = :category",
         ExpressionAttributeValues: {
             ":attachment": data.attachment || null,
-            ":content": data.content || null,
+            ":name": data.name || null,
+            ":brand": data.brand || null,
+            ":category": data.category || null,
         },
         // 'ReturnValues' specifies if and how to return the item's attributes,
         // where ALL_NEW returns all attributes of the item after the update; you
